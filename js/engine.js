@@ -9,7 +9,7 @@
  * drawn but that is not the case. What's really happening is the entire "scene"
  * is being drawn over and over, presenting the illusion of animation.
  *
- * This engine makes the canvas' context (ctx) object globally available to make 
+ * This engine makes the canvas' context (ctx) object globally available to make
  * writing app.js a little simpler to work with.
  */
 
@@ -79,7 +79,25 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
+    }
+
+    function checkCollisions() {
+        // set a leniency distance when detecting collisions because of the algorithm
+        //we are using models the object as a rectangle where they are not quite in reality
+        const leniency = 10;
+
+        //detection algorithm is the "Axis-Aligned Bounding Box" from:
+        // https://developer.mozilla.org/en-US/docs/Games/Techniques/2D_collision_detection
+        allEnemies.forEach(function(enemy) {
+            if( (enemy.getPosX() + enemy.getSideMargin() < (player.getPosX() + player.getSideMargin() + player.getWidth() - leniency))
+                && (enemy.getPosX() + enemy.getSideMargin() + enemy.getWidth() > (player.getPosX() + player.getSideMargin() + leniency))
+                && (enemy.getPosY() + enemy.getTopMargin() < (player.getPosY() + player.getTopMargin() + player.getHeight() - leniency))
+                && (enemy.getPosY() + enemy.getTopMargin() + enemy.getHeight() > (player.getPosY() + player.getTopMargin() + leniency))) {
+                init();
+            }
+        });
+
     }
 
     /* This is called by the update function and loops through all of the
@@ -117,7 +135,7 @@ var Engine = (function(global) {
             numRows = 6,
             numCols = 5,
             row, col;
-        
+
         // Before drawing, clear existing canvas
         ctx.clearRect(0,0,canvas.width,canvas.height)
 
@@ -156,12 +174,12 @@ var Engine = (function(global) {
         player.render();
     }
 
-    /* This function does nothing but it could have been a good place to
-     * handle game reset states - maybe a new game menu or a game over screen
-     * those sorts of things. It's only called once by the init() method.
+    /* Re-create the characters.
+     * It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        allEnemies = [new Enemy(), new Enemy()];
+        player = new Player(ctx);
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -182,4 +200,10 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+
+    //an enemy enters the screen every 2 seconds
+    window.setInterval(function () {
+        allEnemies.push(new Enemy());
+    }, 2000);
+
 })(this);

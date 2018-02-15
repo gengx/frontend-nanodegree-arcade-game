@@ -1,3 +1,23 @@
 body {
+	background: #fefefe url('../images/geometry2.png'); /* Background pattern from Subtle Patterns */
     text-align: center;
+    font-family: 'Coda', cursive;
+
+}
+
+.checkmark-img {
+    width: 160px;
+    height: 120px;
+	margin-top: 100px;
+}
+
+button {
+    height: 30px;
+    width: 100px;
+    background: #5cb85c;
+    color: #ffffff;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 10px;
 }
